@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  OWNER
+  CASHIER
+}
+
+enum TransactionStatus {
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  username     String        @unique
+  passwordHash String        @map("password_hash")
+  role         Role
+  branchId     String?       @map("branch_id")
+  isActive     Boolean       @default(true) @map("is_active")
+  createdAt    DateTime      @default(now()) @map("created_at")
+
+  branch       Branch?       @relation(fields: [branchId], references: [id])
+  transactions Transaction[]
+
+  @@map("users")
+}
+
+model Branch {
+  id           String        @id @default(cuid())
+  name         String
+  location     String?
+  isActive     Boolean       @default(true) @map("is_active")
+  createdAt    DateTime      @default(now()) @map("created_at")
+
+  users        User[]
+  dailyStocks  DailyStock[]
+  transactions Transaction[]
+
+  @@map("branches")
+}
+
+model MenuItem {
+  id               String            @id @default(cuid())
+  name             String
+  category         String
+  price            Decimal           @db.Decimal(10, 2)
+  imageUrl         String?           @map("image_url")
+  isActive         Boolean           @default(true) @map("is_active")
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+
+  dailyStocks      DailyStock[]
+  transactionItems TransactionItem[]
+
+  @@map("menu_items")
+}
+
+model DailyStock {
+  id           String   @id @default(cuid())
+  branchId     String   @map("branch_id")
+  menuItemId   String   @map("menu_item_id")
+  date         DateTime @db.Date
+  initialQty   Int      @map("initial_qty")
+  remainingQty Int      @map("remaining_qty")
+
+  branch       Branch   @relation(fields: [branchId], references: [id])
+  menuItem     MenuItem @relation(fields: [menuItemId], references: [id])
+
+  @@unique([branchId, menuItemId, date])
+  @@map("daily_stocks")
+}
+
+model Transaction {
+  id           String            @id @default(cuid())
+  code         String            @unique
+  branchId     String            @map("branch_id")
+  cashierId    String            @map("cashier_id")
+  subtotal     Decimal           @db.Decimal(10, 2)
+  discount     Decimal           @default(0) @db.Decimal(10, 2)
+  total        Decimal           @db.Decimal(10, 2)
+  paidAmount   Decimal           @map("paid_amount") @db.Decimal(10, 2)
+  changeAmount Decimal           @map("change_amount") @db.Decimal(10, 2)
+  status       TransactionStatus @default(COMPLETED)
+  createdAt    DateTime          @default(now()) @map("created_at")
+
+  branch       Branch            @relation(fields: [branchId], references: [id])
+  cashier      User              @relation(fields: [cashierId], references: [id])
+  items        TransactionItem[]
+
+  @@map("transactions")
+}
+
+model TransactionItem {
+  id            String      @id @default(cuid())
+  transactionId String      @map("transaction_id")
+  menuItemId    String      @map("menu_item_id")
+  menuName      String      @map("menu_name")
+  price         Decimal     @db.Decimal(10, 2)
+  qty           Int
+  lineTotal     Decimal     @map("line_total") @db.Decimal(10, 2)
+
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  menuItem      MenuItem    @relation(fields: [menuItemId], references: [id])
+
+  @@map("transaction_items")
+}
