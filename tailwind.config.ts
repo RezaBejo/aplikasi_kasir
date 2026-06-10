@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import { appConfig } from "./src/config/app";
 
 const config: Config = {
   darkMode: ["class"],
@@ -43,6 +44,11 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        /** Warna brand utama — dibaca dari src/config/app.ts */
+        brand: {
+          DEFAULT: appConfig.themeColor,
+          light: appConfig.themeColorLight,
+        },
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",

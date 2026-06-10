@@ -78,7 +78,7 @@ export default async function HistoryPage() {
                 <div>
                   <p className="font-semibold text-gray-900 text-sm">{tx.code}</p>
                   <p className="text-xs text-gray-400">
-                    {formatTime(tx.createdAt)} · {tx.cashier.name}
+                    {formatTime(tx.createdAt)} · {tx.cashier?.name ?? "—"}
                   </p>
                 </div>
                 <p className="font-bold text-gray-900">{formatRp(tx.total)}</p>

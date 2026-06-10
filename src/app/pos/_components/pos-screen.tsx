@@ -203,7 +203,7 @@ export default function PosScreen({
             onClick={() => cart.length && setIsCheckoutOpen(true)}
             className={`relative p-2 rounded-xl transition-colors ${
               cart.length
-                ? "bg-gray-900 text-white"
+                ? "bg-brand text-white"
                 : "bg-gray-100 text-gray-400"
             }`}
           >
@@ -226,7 +226,7 @@ export default function PosScreen({
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                 activeCategory === cat
-                  ? "bg-gray-900 text-white"
+                  ? "bg-brand text-white"
                   : "bg-gray-100 text-gray-600"
               }`}
             >
@@ -261,13 +261,13 @@ export default function PosScreen({
                     isDisabled
                       ? "opacity-50 cursor-not-allowed border-transparent"
                       : inCart > 0
-                      ? "border-gray-900 shadow-md"
+                      ? "border-brand shadow-md"
                       : "border-transparent active:scale-95 active:shadow-none"
                   }`}
               >
                 {/* Cart badge */}
                 {inCart > 0 && (
-                  <span className="absolute top-2.5 right-2.5 bg-gray-900 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                  <span className="absolute top-2.5 right-2.5 bg-brand text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
                     {inCart}
                   </span>
                 )}
@@ -301,7 +301,7 @@ export default function PosScreen({
           </div>
           <button
             onClick={() => setIsCheckoutOpen(true)}
-            className="bg-gray-900 text-white px-8 py-3.5 rounded-2xl font-bold text-sm active:bg-gray-700"
+            className="bg-brand text-white px-8 py-3.5 rounded-2xl font-bold text-sm active:bg-brand-light"
           >
             Bayar
           </button>
@@ -344,7 +344,7 @@ export default function PosScreen({
                 </div>
                 <button
                   onClick={closeCheckout}
-                  className="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold mt-2 active:bg-gray-700"
+                  className="w-full bg-brand text-white py-4 rounded-2xl font-bold mt-2 active:bg-brand-light"
                 >
                   Transaksi Baru
                 </button>
@@ -403,7 +403,7 @@ export default function PosScreen({
                       value={discount || ""}
                       onChange={(e) => setDiscount(Number(e.target.value) || 0)}
                       placeholder="0"
-                      className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                      className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand"
                     />
                   </div>
 
@@ -434,7 +434,7 @@ export default function PosScreen({
                       value={paidInput}
                       onChange={(e) => setPaidInput(e.target.value)}
                       placeholder="Jumlah tunai"
-                      className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                      className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand"
                       autoFocus
                     />
                   </div>
@@ -462,7 +462,7 @@ export default function PosScreen({
                   <button
                     onClick={handleSubmit}
                     disabled={!cart.length || paidAmount < total || loading}
-                    className="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold text-base disabled:opacity-40 active:bg-gray-700 mt-1"
+                    className="w-full bg-brand text-white py-4 rounded-2xl font-bold text-base disabled:opacity-40 active:bg-brand-light mt-1"
                   >
                     {loading ? "Memproses..." : `Simpan  •  ${formatRp(total)}`}
                   </button>

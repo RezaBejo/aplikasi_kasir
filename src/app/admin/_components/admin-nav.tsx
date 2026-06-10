@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { appConfig } from "@/config/app";
 import { useState } from "react";
 import {
   LayoutDashboard,
@@ -71,7 +72,7 @@ export default function AdminNav({ ownerName }: { ownerName: string }) {
         {/* Top bar */}
         <div className="px-4 py-3 flex items-center justify-between border-b border-gray-100">
           <button onClick={openModal} className="text-left group">
-            <p className="font-bold text-gray-900 text-sm leading-tight">POS Gerobak</p>
+            <p className="font-bold text-gray-900 text-sm leading-tight">{appConfig.name}</p>
             <p className="text-xs text-gray-400 flex items-center gap-1 group-hover:text-gray-600">
               {ownerName}
               <KeyRound size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -105,7 +106,7 @@ export default function AdminNav({ ownerName }: { ownerName: string }) {
                 key={href}
                 href={href}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-colors ${
-                  active ? "bg-gray-900 text-white" : "text-gray-500 hover:bg-gray-100"
+                  active ? "bg-brand text-white" : "text-gray-500 hover:bg-gray-100"
                 }`}
               >
                 <Icon size={14} />
@@ -140,7 +141,7 @@ export default function AdminNav({ ownerName }: { ownerName: string }) {
                       value={currentPwd}
                       onChange={(e) => setCurrentPwd(e.target.value)}
                       placeholder="Masukkan password lama"
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand"
                     />
                     <button onClick={() => setShowCurrent(!showCurrent)} className="absolute right-3 top-2.5 text-gray-400">
                       {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -157,7 +158,7 @@ export default function AdminNav({ ownerName }: { ownerName: string }) {
                       value={newPwd}
                       onChange={(e) => setNewPwd(e.target.value)}
                       placeholder="Minimal 6 karakter"
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand"
                     />
                     <button onClick={() => setShowNew(!showNew)} className="absolute right-3 top-2.5 text-gray-400">
                       {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -173,7 +174,7 @@ export default function AdminNav({ ownerName }: { ownerName: string }) {
                     value={confirmPwd}
                     onChange={(e) => setConfirmPwd(e.target.value)}
                     placeholder="Ulangi password baru"
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand"
                   />
                 </div>
 
@@ -182,7 +183,7 @@ export default function AdminNav({ ownerName }: { ownerName: string }) {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="w-full bg-gray-900 text-white py-3 rounded-xl text-sm font-bold mt-1 disabled:opacity-50"
+                  className="w-full bg-brand text-white py-3 rounded-xl text-sm font-bold mt-1 disabled:opacity-50"
                 >
                   {saving ? "Menyimpan..." : "Simpan Password"}
                 </button>

@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Pencil, X, Check, Eye, EyeOff } from "lucide-react";
+import { Plus, Pencil, X, Check, Eye, EyeOff, Trash2, AlertTriangle } from "lucide-react";
 
 type Branch = { id: string; name: string; isActive: boolean };
 type Staff = {
   id: string; name: string; username: string; isActive: boolean;
   branchId: string | null; branch: { name: string } | null;
+  txCount: number;
 };
 
 const EMPTY_FORM = { name: "", username: "", password: "", branchId: "" };
@@ -21,6 +22,9 @@ export default function StaffPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [showPwd, setShowPwd] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   const fetchData = async () => {
     const [sRes, bRes] = await Promise.all([fetch("/api/admin/staff"), fetch("/api/admin/branches")]);
@@ -59,6 +63,14 @@ export default function StaffPage() {
     else { const d = await res.json(); setError(d.error); }
   };
 
+  const handleDelete = async (id: string) => {
+    setDeleting(true); setDeleteError("");
+    const res = await fetch(`/api/admin/staff/${id}`, { method: "DELETE" });
+    setDeleting(false);
+    if (res.ok) { setConfirmDeleteId(null); fetchData(); }
+    else { const d = await res.json(); setDeleteError(d.error ?? "Gagal menghapus"); }
+  };
+
   const toggleActive = async (s: Staff) => {
     await fetch(`/api/admin/staff/${s.id}`, {
       method: "PATCH",
@@ -75,7 +87,7 @@ export default function StaffPage() {
       <div className="flex items-center justify-between">
         <h1 className="font-bold text-gray-900 text-lg">Manajemen Karyawan</h1>
         <button onClick={() => { setShowAdd(!showAdd); setError(""); }}
-          className="flex items-center gap-1.5 bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-medium">
+          className="flex items-center gap-1.5 bg-brand text-white px-4 py-2 rounded-xl text-sm font-medium">
           <Plus size={14} /> Tambah
         </button>
       </div>
@@ -85,28 +97,28 @@ export default function StaffPage() {
         <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
           <p className="font-semibold text-sm text-gray-900">Kasir Baru</p>
           <input placeholder="Nama lengkap *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
           <div className="grid grid-cols-2 gap-3">
             <input placeholder="Username *" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })}
-              className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+              className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
             <div className="relative">
               <input type={showPwd ? "text" : "password"} placeholder="Password *" value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
               <button onClick={() => setShowPwd(!showPwd)} className="absolute right-2.5 top-2.5 text-gray-400">
                 {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
           </div>
           <select value={form.branchId} onChange={(e) => setForm({ ...form, branchId: e.target.value })}
-            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-900">
+            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand">
             <option value="">-- Pilih Cabang *</option>
             {activeBranches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
           </select>
           {error && <p className="text-xs text-red-500">{error}</p>}
           <div className="flex gap-2">
             <button onClick={handleAdd} disabled={saving}
-              className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50">
+              className="flex-1 bg-brand text-white py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50">
               {saving ? "Menyimpan..." : "Simpan"}
             </button>
             <button onClick={() => setShowAdd(false)} className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-600">
@@ -127,22 +139,57 @@ export default function StaffPage() {
               <div className="px-4 py-3 space-y-2">
                 <input value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                   placeholder="Nama"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
                 <select value={editForm.branchId} onChange={(e) => setEditForm({ ...editForm, branchId: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-900">
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand">
                   {activeBranches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
                 </select>
                 <input type="password" placeholder="Password baru (kosongkan jika tidak ganti)" value={editForm.newPassword}
                   onChange={(e) => setEditForm({ ...editForm, newPassword: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
                 {error && <p className="text-xs text-red-500">{error}</p>}
                 <div className="flex gap-2">
                   <button onClick={() => handleEdit(s.id)} disabled={saving}
-                    className="flex items-center gap-1 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-xs font-medium">
+                    className="flex items-center gap-1 bg-brand text-white px-3 py-1.5 rounded-lg text-xs font-medium">
                     <Check size={12} /> Simpan
                   </button>
                   <button onClick={() => setEditId(null)}
                     className="flex items-center gap-1 text-gray-500 px-3 py-1.5 rounded-lg text-xs border border-gray-200">
+                    <X size={12} /> Batal
+                  </button>
+                </div>
+              </div>
+            ) : confirmDeleteId === s.id ? (
+              <div className="px-4 py-3 space-y-2">
+                <p className="text-sm font-semibold text-gray-900">
+                  Hapus karyawan &ldquo;{s.name}&rdquo;?
+                </p>
+                {s.txCount > 0 && (
+                  <div className="bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 text-xs text-amber-700 space-y-0.5">
+                    <p className="font-semibold flex items-center gap-1">
+                      <AlertTriangle size={11} /> Perhatian
+                    </p>
+                    <p>
+                      {s.txCount} riwayat transaksi akan tetap tersimpan,
+                      namun nama kasir akan dikosongkan.
+                    </p>
+                  </div>
+                )}
+                {deleteError && (
+                  <p className="text-xs text-red-500 bg-red-50 px-3 py-2 rounded-lg">{deleteError}</p>
+                )}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleDelete(s.id)}
+                    disabled={deleting}
+                    className="flex items-center gap-1 bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium disabled:opacity-50"
+                  >
+                    <Trash2 size={12} /> {deleting ? "Menghapus..." : "Ya, Hapus"}
+                  </button>
+                  <button
+                    onClick={() => { setConfirmDeleteId(null); setDeleteError(""); }}
+                    className="flex items-center gap-1 text-gray-500 px-3 py-1.5 rounded-lg text-xs border border-gray-200"
+                  >
                     <X size={12} /> Batal
                   </button>
                 </div>
@@ -159,9 +206,16 @@ export default function StaffPage() {
                   }`}>
                   {s.isActive ? "Aktif" : "Nonaktif"}
                 </button>
-                <button onClick={() => { setEditId(s.id); setEditForm({ name: s.name, branchId: s.branchId ?? "", newPassword: "" }); setError(""); }}
+                <button
+                  onClick={() => { setEditId(s.id); setEditForm({ name: s.name, branchId: s.branchId ?? "", newPassword: "" }); setError(""); setConfirmDeleteId(null); }}
                   className="p-2 rounded-xl bg-gray-100 text-gray-600 active:bg-gray-200">
                   <Pencil size={14} />
+                </button>
+                <button
+                  onClick={() => { setConfirmDeleteId(s.id); setDeleteError(""); setEditId(null); }}
+                  className="p-2 rounded-xl bg-red-50 text-red-400 active:bg-red-100"
+                >
+                  <Trash2 size={14} />
                 </button>
               </div>
             )}

@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
   const branchMap = new Map(branches.map((b) => [b.id, b.name]));
   const branchSummary = byBranch.map((b) => ({
     branchId: b.branchId,
-    branchName: branchMap.get(b.branchId) ?? b.branchId,
+    branchName: (b.branchId ? branchMap.get(b.branchId) : undefined) ?? b.branchId ?? "—",
     totalSales: Number(b._sum.total ?? 0),
     txCount: b._count.id,
   }));
@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
   const cashierMap = new Map(cashiers.map((c) => [c.id, c.name]));
   const cashierSummary = byCashier.map((c) => ({
     cashierId: c.cashierId,
-    cashierName: cashierMap.get(c.cashierId) ?? c.cashierId,
+    cashierName: (c.cashierId ? cashierMap.get(c.cashierId) : undefined) ?? c.cashierId ?? "—",
     totalSales: Number(c._sum.total ?? 0),
     txCount: c._count.id,
   }));
@@ -119,8 +119,8 @@ export async function GET(req: NextRequest) {
     transactions: transactions.map((t) => ({
       id: t.id,
       code: t.code,
-      branchName: t.branch.name,
-      cashierName: t.cashier.name,
+      branchName: t.branch?.name ?? "—",
+      cashierName: t.cashier?.name ?? "—",
       total: Number(t.total),
       discount: Number(t.discount),
       paidAmount: Number(t.paidAmount),

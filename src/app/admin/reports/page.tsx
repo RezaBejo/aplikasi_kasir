@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { formatRp, formatDate, formatTime, toInputDate } from "@/lib/format";
+import { appConfig } from "@/config/app";
 import { Search, ChevronDown, ChevronUp } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -183,8 +184,8 @@ export default function ReportsPage() {
                 <AreaChart data={trendData} margin={{ top: 5, right: 4, left: -18, bottom: 0 }}>
                   <defs>
                     <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#111827" stopOpacity={0.15} />
-                      <stop offset="95%" stopColor="#111827" stopOpacity={0} />
+                      <stop offset="5%" stopColor={appConfig.themeColor} stopOpacity={0.15} />
+                      <stop offset="95%" stopColor={appConfig.themeColor} stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
@@ -194,8 +195,8 @@ export default function ReportsPage() {
                     {...TOOLTIP_STYLE}
                     formatter={fmtSales}
                   />
-                  <Area type="monotone" dataKey="total" stroke="#111827" strokeWidth={2}
-                    fill="url(#areaGrad)" dot={false} activeDot={{ r: 4, fill: "#111827" }} />
+                  <Area type="monotone" dataKey="total" stroke={appConfig.themeColor} strokeWidth={2}
+                    fill="url(#areaGrad)" dot={false} activeDot={{ r: 4, fill: appConfig.themeColor }} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -216,7 +217,7 @@ export default function ReportsPage() {
                   </div>
                   {data.totalSales > 0 && (
                     <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-gray-900 rounded-full"
+                      <div className="h-full bg-brand rounded-full"
                         style={{ width: `${Math.round((b.totalSales / data.totalSales) * 100)}%` }} />
                     </div>
                   )}
@@ -233,7 +234,7 @@ export default function ReportsPage() {
                       <Tooltip {...TOOLTIP_STYLE} formatter={fmtSales} />
                       <Bar dataKey="total" radius={[0, 4, 4, 0]} maxBarSize={20}>
                         {branchChartData.map((_, i) => (
-                          <Cell key={i} fill={i === 0 ? "#111827" : "#d1d5db"} />
+                          <Cell key={i} fill={i === 0 ? appConfig.themeColor : "#d1d5db"} />
                         ))}
                       </Bar>
                     </BarChart>
@@ -271,7 +272,7 @@ export default function ReportsPage() {
                     <XAxis type="number" hide />
                     <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: "#374151" }} width={80} />
                     <Tooltip {...TOOLTIP_STYLE} formatter={fmtItems} />
-                    <Bar dataKey="qty" radius={[0, 4, 4, 0]} maxBarSize={18} fill="#111827">
+                    <Bar dataKey="qty" radius={[0, 4, 4, 0]} maxBarSize={18} fill={appConfig.themeColor}>
                       <LabelList dataKey="qty" position="right" style={{ fontSize: 10, fill: "#6b7280" }} formatter={fmtLabel} />
                     </Bar>
                   </BarChart>

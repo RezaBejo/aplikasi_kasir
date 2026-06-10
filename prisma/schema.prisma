@@ -82,8 +82,8 @@ model DailyStock {
 model Transaction {
   id           String            @id @default(cuid())
   code         String            @unique
-  branchId     String            @map("branch_id")
-  cashierId    String            @map("cashier_id")
+  branchId     String?           @map("branch_id")
+  cashierId    String?           @map("cashier_id")
   subtotal     Decimal           @db.Decimal(10, 2)
   discount     Decimal           @default(0) @db.Decimal(10, 2)
   total        Decimal           @db.Decimal(10, 2)
@@ -92,8 +92,8 @@ model Transaction {
   status       TransactionStatus @default(COMPLETED)
   createdAt    DateTime          @default(now()) @map("created_at")
 
-  branch       Branch            @relation(fields: [branchId], references: [id])
-  cashier      User              @relation(fields: [cashierId], references: [id])
+  branch       Branch?           @relation(fields: [branchId], references: [id])
+  cashier      User?             @relation(fields: [cashierId], references: [id])
   items        TransactionItem[]
 
   @@map("transactions")
@@ -102,14 +102,14 @@ model Transaction {
 model TransactionItem {
   id            String      @id @default(cuid())
   transactionId String      @map("transaction_id")
-  menuItemId    String      @map("menu_item_id")
+  menuItemId    String?     @map("menu_item_id")
   menuName      String      @map("menu_name")
   price         Decimal     @db.Decimal(10, 2)
   qty           Int
   lineTotal     Decimal     @map("line_total") @db.Decimal(10, 2)
 
   transaction   Transaction @relation(fields: [transactionId], references: [id])
-  menuItem      MenuItem    @relation(fields: [menuItemId], references: [id])
+  menuItem      MenuItem?   @relation(fields: [menuItemId], references: [id])
 
   @@map("transaction_items")
 }

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { formatRp } from "@/lib/format";
 import Link from "next/link";
 import { TrendAreaChart, BranchBarChart } from "./_components/dashboard-chart";
+import { DashboardStockLive } from "./_components/dashboard-stock-live";
 
 export default async function AdminDashboard() {
   await getServerSession(authOptions);
@@ -128,7 +129,7 @@ export default async function AdminDashboard() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-gray-900 text-white rounded-2xl p-4">
+        <div className="bg-brand text-white rounded-2xl p-4">
           <p className="text-xs text-gray-400">Penjualan Hari Ini</p>
           <p className="font-bold text-xl mt-1">{formatRp(totalSales)}</p>
           <p className="text-xs text-gray-400 mt-1">{branches.length} cabang aktif</p>
@@ -186,7 +187,7 @@ export default async function AdminDashboard() {
             {totalSales > 0 && (
               <div className="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gray-900 rounded-full transition-all"
+                  className="h-full bg-brand rounded-full transition-all"
                   style={{ width: `${Math.round((branch.totalSales / totalSales) * 100)}%` }}
                 />
               </div>
@@ -219,52 +220,15 @@ export default async function AdminDashboard() {
         </div>
       )}
 
-      {/* Stock Overview real-time */}
+      {/* Stock Overview real-time — client component, auto-refresh 60s */}
       <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
         <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
           <h2 className="font-semibold text-gray-900 text-sm">Sisa Stok Real-time</h2>
           <Link href="/admin/stock" className="text-xs text-blue-600">Atur stok →</Link>
         </div>
-        {stocks.length === 0 && (
-          <p className="px-4 py-6 text-xs text-gray-400 text-center">Stok hari ini belum diatur</p>
-        )}
-        {branchData.map(({ id, name, stockItems }) => (
-          <div key={id} className="border-b border-gray-50 last:border-0">
-            <p className="px-4 py-1.5 text-xs font-semibold text-gray-500 bg-gray-50">{name}</p>
-            {stockItems.length === 0 ? (
-              <p className="px-4 py-2 text-xs text-gray-400">Belum diatur</p>
-            ) : (
-              stockItems.map((s) => (
-                <div key={s.id} className="px-4 py-2 flex items-center gap-2 border-b border-gray-50 last:border-0">
-                  <p className="flex-1 text-sm text-gray-700">{s.menuItem.name}</p>
-                  {/* progress bar */}
-                  <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${
-                        s.remainingQty === 0 ? "bg-red-400" :
-                        s.remainingQty <= 5 ? "bg-amber-400" : "bg-emerald-400"
-                      }`}
-                      style={{
-                        width: s.initialQty > 0
-                          ? `${Math.min(100, (s.remainingQty / s.initialQty) * 100)}%`
-                          : "0%",
-                      }}
-                    />
-                  </div>
-                  {s.remainingQty === 0 ? (
-                    <span className="text-xs font-semibold text-red-500 w-12 text-right">Habis</span>
-                  ) : (
-                    <span className={`text-xs font-semibold w-12 text-right ${
-                      s.remainingQty <= 5 ? "text-amber-600" : "text-emerald-600"
-                    }`}>
-                      Sisa {s.remainingQty}
-                    </span>
-                  )}
-                </div>
-              ))
-            )}
-          </div>
-        ))}
+        <div className="px-4 py-3">
+          <DashboardStockLive />
+        </div>
       </div>
 
       {/* Top items */}

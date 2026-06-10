@@ -12,11 +12,19 @@ export async function GET() {
 
   const staff = await prisma.user.findMany({
     where: { role: "CASHIER" },
-    include: { branch: { select: { name: true } } },
+    include: {
+      branch: { select: { name: true } },
+      _count: { select: { transactions: true } },
+    },
     orderBy: { name: "asc" },
   });
 
-  return NextResponse.json(staff.map(({ passwordHash: _, ...s }) => s));
+  return NextResponse.json(
+    staff.map(({ passwordHash: _, _count, ...s }) => ({
+      ...s,
+      txCount: _count.transactions,
+    }))
+  );
 }
 
 export async function POST(req: NextRequest) {

@@ -9,8 +9,25 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const branches = await prisma.branch.findMany({ orderBy: { name: "asc" } });
-  return NextResponse.json(branches);
+  const branches = await prisma.branch.findMany({
+    orderBy: { name: "asc" },
+    include: {
+      _count: {
+        select: {
+          transactions: true,
+          users: true,
+        },
+      },
+    },
+  });
+
+  return NextResponse.json(
+    branches.map(({ _count, ...b }) => ({
+      ...b,
+      txCount: _count.transactions,
+      cashierCount: _count.users,
+    }))
+  );
 }
 
 export async function POST(req: NextRequest) {

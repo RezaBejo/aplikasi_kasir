@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "reset-owner-password": "tsx prisma/reset-owner-password.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

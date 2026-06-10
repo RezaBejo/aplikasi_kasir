@@ -5,6 +5,7 @@ import {
   ResponsiveContainer, BarChart, Bar, Cell,
 } from "recharts";
 import { formatRp } from "@/lib/format";
+import { appConfig } from "@/config/app";
 
 type TrendPoint = { date: string; total: number; count: number };
 type BranchPoint = { name: string; total: number };
@@ -15,9 +16,7 @@ function formatK(val: number) {
   return String(val);
 }
 
-// Recharts formatter accepts ValueType | undefined
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function fmtTooltip(val: any): [string, string] {
+function fmtTooltip(val: unknown): [string, string] {
   return [formatRp(Number(val ?? 0)), "Penjualan"];
 }
 
@@ -35,8 +34,8 @@ export function TrendAreaChart({ data }: { data: TrendPoint[] }) {
       <AreaChart data={data} margin={{ top: 5, right: 4, left: -18, bottom: 0 }}>
         <defs>
           <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#111827" stopOpacity={0.12} />
-            <stop offset="95%" stopColor="#111827" stopOpacity={0} />
+            <stop offset="5%" stopColor={appConfig.themeColor} stopOpacity={0.12} />
+            <stop offset="95%" stopColor={appConfig.themeColor} stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
@@ -45,7 +44,7 @@ export function TrendAreaChart({ data }: { data: TrendPoint[] }) {
         <Tooltip {...tooltipStyle} formatter={fmtTooltip} />
         <Area
           type="monotone" dataKey="total"
-          stroke="#111827" strokeWidth={2}
+          stroke={appConfig.themeColor} strokeWidth={2}
           fill="url(#grad)" dot={false} activeDot={{ r: 4 }}
         />
       </AreaChart>
@@ -64,7 +63,7 @@ export function BranchBarChart({ data }: { data: BranchPoint[] }) {
         <Tooltip {...tooltipStyle} formatter={fmtTooltip} />
         <Bar dataKey="total" radius={[0, 4, 4, 0]} maxBarSize={22}>
           {data.map((_, i) => (
-            <Cell key={i} fill={i === 0 ? "#111827" : "#d1d5db"} />
+            <Cell key={i} fill={i === 0 ? appConfig.themeColor : "#d1d5db"} />
           ))}
         </Bar>
       </BarChart>

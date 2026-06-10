@@ -11,9 +11,16 @@ export async function GET() {
 
   const items = await prisma.menuItem.findMany({
     orderBy: [{ category: "asc" }, { name: "asc" }],
+    include: { _count: { select: { transactionItems: true } } },
   });
 
-  return NextResponse.json(items.map((i) => ({ ...i, price: Number(i.price) })));
+  return NextResponse.json(
+    items.map(({ _count, ...i }) => ({
+      ...i,
+      price: Number(i.price),
+      soldCount: _count.transactionItems,
+    }))
+  );
 }
 
 export async function POST(req: NextRequest) {

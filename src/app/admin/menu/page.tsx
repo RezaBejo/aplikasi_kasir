@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { formatRp } from "@/lib/format";
-import { Plus, Pencil, X, Check } from "lucide-react";
+import { Plus, Pencil, X, Check, Trash2, AlertTriangle } from "lucide-react";
 
 type MenuItem = {
   id: string; name: string; category: string;
   price: number; imageUrl: string | null; isActive: boolean;
+  soldCount: number;
 };
 
 const EMPTY = { name: "", category: "", price: "", imageUrl: "" };
@@ -20,6 +21,9 @@ export default function MenuPage() {
   const [editForm, setEditForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   const fetchItems = async () => {
     const res = await fetch("/api/admin/menu");
@@ -54,6 +58,14 @@ export default function MenuPage() {
     else { const d = await res.json(); setError(d.error); }
   };
 
+  const handleDelete = async (id: string) => {
+    setDeleting(true); setDeleteError("");
+    const res = await fetch(`/api/admin/menu/${id}`, { method: "DELETE" });
+    setDeleting(false);
+    if (res.ok) { setConfirmDeleteId(null); fetchItems(); }
+    else { const d = await res.json(); setDeleteError(d.error ?? "Gagal menghapus"); }
+  };
+
   const toggleActive = async (item: MenuItem) => {
     await fetch(`/api/admin/menu/${item.id}`, {
       method: "PATCH",
@@ -70,7 +82,7 @@ export default function MenuPage() {
       <div className="flex items-center justify-between">
         <h1 className="font-bold text-gray-900 text-lg">Manajemen Menu</h1>
         <button onClick={() => { setShowAdd(!showAdd); setError(""); }}
-          className="flex items-center gap-1.5 bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-medium">
+          className="flex items-center gap-1.5 bg-brand text-white px-4 py-2 rounded-xl text-sm font-medium">
           <Plus size={14} /> Tambah
         </button>
       </div>
@@ -80,17 +92,17 @@ export default function MenuPage() {
         <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
           <p className="font-semibold text-sm text-gray-900">Menu Baru</p>
           <input placeholder="Nama menu *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+            className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
           <div className="grid grid-cols-2 gap-3">
             <input placeholder="Kategori *" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}
-              className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+              className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
             <input type="number" placeholder="Harga *" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })}
-              className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+              className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
           </div>
           {error && <p className="text-xs text-red-500">{error}</p>}
           <div className="flex gap-2">
             <button onClick={handleAdd} disabled={saving}
-              className="flex-1 bg-gray-900 text-white py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50">
+              className="flex-1 bg-brand text-white py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50">
               {saving ? "Menyimpan..." : "Simpan"}
             </button>
             <button onClick={() => setShowAdd(false)} className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-600">
@@ -111,20 +123,55 @@ export default function MenuPage() {
               {editId === item.id ? (
                 <div className="px-4 py-3 space-y-2">
                   <input value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
                   <div className="grid grid-cols-2 gap-2">
                     <input value={editForm.category} onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
-                      className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                      className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
                     <input type="number" value={editForm.price} onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
-                      className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
+                      className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
                   </div>
                   {error && <p className="text-xs text-red-500">{error}</p>}
                   <div className="flex gap-2">
                     <button onClick={() => handleEdit(item.id)} disabled={saving}
-                      className="flex items-center gap-1 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-xs font-medium">
+                      className="flex items-center gap-1 bg-brand text-white px-3 py-1.5 rounded-lg text-xs font-medium">
                       <Check size={12} /> Simpan
                     </button>
                     <button onClick={() => setEditId(null)} className="flex items-center gap-1 text-gray-500 px-3 py-1.5 rounded-lg text-xs border border-gray-200">
+                      <X size={12} /> Batal
+                    </button>
+                  </div>
+                </div>
+              ) : confirmDeleteId === item.id ? (
+                <div className="px-4 py-3 space-y-2">
+                  <p className="text-sm font-semibold text-gray-900">
+                    Hapus menu &ldquo;{item.name}&rdquo;?
+                  </p>
+                  {item.soldCount > 0 && (
+                    <div className="bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 text-xs text-amber-700 space-y-0.5">
+                      <p className="font-semibold flex items-center gap-1">
+                        <AlertTriangle size={11} /> Perhatian
+                      </p>
+                      <p>
+                        Menu ini sudah terjual {item.soldCount}× — data transaksi tetap
+                        aman (nama & harga tersimpan sebagai snapshot).
+                      </p>
+                    </div>
+                  )}
+                  {deleteError && (
+                    <p className="text-xs text-red-500 bg-red-50 px-3 py-2 rounded-lg">{deleteError}</p>
+                  )}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      disabled={deleting}
+                      className="flex items-center gap-1 bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium disabled:opacity-50"
+                    >
+                      <Trash2 size={12} /> {deleting ? "Menghapus..." : "Ya, Hapus"}
+                    </button>
+                    <button
+                      onClick={() => { setConfirmDeleteId(null); setDeleteError(""); }}
+                      className="flex items-center gap-1 text-gray-500 px-3 py-1.5 rounded-lg text-xs border border-gray-200"
+                    >
                       <X size={12} /> Batal
                     </button>
                   </div>
@@ -143,9 +190,16 @@ export default function MenuPage() {
                     }`}>
                     {item.isActive ? "Aktif" : "Nonaktif"}
                   </button>
-                  <button onClick={() => { setEditId(item.id); setEditForm({ name: item.name, category: item.category, price: String(item.price), imageUrl: item.imageUrl ?? "" }); setError(""); }}
+                  <button
+                    onClick={() => { setEditId(item.id); setEditForm({ name: item.name, category: item.category, price: String(item.price), imageUrl: item.imageUrl ?? "" }); setError(""); setConfirmDeleteId(null); }}
                     className="p-2 rounded-xl bg-gray-100 text-gray-600 active:bg-gray-200">
                     <Pencil size={14} />
+                  </button>
+                  <button
+                    onClick={() => { setConfirmDeleteId(item.id); setDeleteError(""); setEditId(null); }}
+                    className="p-2 rounded-xl bg-red-50 text-red-400 active:bg-red-100"
+                  >
+                    <Trash2 size={14} />
                   </button>
                 </div>
               )}
