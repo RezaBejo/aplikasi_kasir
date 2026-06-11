@@ -2,6 +2,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 import PosScreen from "./_components/pos-screen";
 
 export default async function PosPage() {

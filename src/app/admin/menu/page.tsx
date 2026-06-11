@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { formatRp } from "@/lib/format";
 import { Plus, Pencil, X, Check, Trash2, AlertTriangle } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 type MenuItem = {
   id: string; name: string; category: string;
   price: number; imageUrl: string | null; isActive: boolean;

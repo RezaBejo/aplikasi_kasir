@@ -1,6 +1,8 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 import { formatRp } from "@/lib/format";
 import Link from "next/link";
 import { TrendAreaChart, BranchBarChart } from "./_components/dashboard-chart";

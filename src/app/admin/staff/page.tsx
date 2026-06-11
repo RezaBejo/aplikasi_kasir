@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Plus, Pencil, X, Check, Eye, EyeOff, Trash2, AlertTriangle } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 type Branch = { id: string; name: string; isActive: boolean };
 type Staff = {
   id: string; name: string; username: string; isActive: boolean;

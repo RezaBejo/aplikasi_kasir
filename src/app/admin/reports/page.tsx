@@ -8,6 +8,9 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, Cell, LabelList,
 } from "recharts";
+
+export const dynamic = "force-dynamic";
+
 type Branch = { id: string; name: string };
 type Cashier = { id: string; name: string };
 type Summary = {

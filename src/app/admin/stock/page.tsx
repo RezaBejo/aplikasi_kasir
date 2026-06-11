@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Save, RefreshCw, Activity } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 type Branch = { id: string; name: string; isActive: boolean };
 type StockItem = {
   menuItemId: string;

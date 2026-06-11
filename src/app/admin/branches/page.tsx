@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Plus, Pencil, X, Check, Trash2, AlertTriangle } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 type Branch = {
   id: string; name: string; location: string | null; isActive: boolean;
   txCount: number; cashierCount: number;
