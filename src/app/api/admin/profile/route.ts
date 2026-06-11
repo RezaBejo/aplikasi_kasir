@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { compare, hash } from "bcryptjs";
 
+export const dynamic = "force-dynamic";
+
 export async function PATCH(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== "OWNER") {
